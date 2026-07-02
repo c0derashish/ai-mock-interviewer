@@ -1,0 +1,51 @@
+{
+  "languages": [
+    "Python", "Java", "C++", "C", "JavaScript", "TypeScript", "Go", "Rust",
+    "SQL", "R", "Kotlin", "Swift", "PHP", "Ruby", "Scala", "MATLAB",
+    "Bash", "Shell", "Dart", "Haskell", "Perl", "Assembly"
+  ],
+  "frameworks": [
+    "React", "Angular", "Vue", "Next.js", "Nuxt.js", "Svelte",
+    "Django", "Flask", "FastAPI", "Spring Boot", "Express.js", "NestJS",
+    "Laravel", "Rails", "Gin", "Echo", "Fiber",
+    "TensorFlow", "PyTorch", "Keras", "scikit-learn", "Pandas", "NumPy",
+    "Hadoop", "Spark", "Kafka", "Airflow",
+    "React Native", "Flutter", "Ionic"
+  ],
+  "tools": [
+    "Git", "GitHub", "GitLab", "Bitbucket",
+    "Docker", "Kubernetes", "Podman",
+    "Jenkins", "GitHub Actions", "CircleCI", "Travis CI",
+    "Postman", "Swagger", "Insomnia",
+    "JIRA", "Confluence", "Trello", "Notion",
+    "Figma", "Adobe XD", "Sketch",
+    "VS Code", "IntelliJ", "Eclipse", "PyCharm",
+    "Terraform", "Ansible", "Puppet", "Chef",
+    "Nginx", "Apache", "Linux", "Ubuntu"
+  ],
+  "databases": [
+    "MySQL", "PostgreSQL", "SQLite", "Oracle", "SQL Server",
+    "MongoDB", "Redis", "Cassandra", "DynamoDB", "Firebase",
+    "Elasticsearch", "Neo4j", "CockroachDB", "Supabase"
+  ],
+  "cloud": [
+    "AWS", "Azure", "GCP", "Heroku", "Vercel", "Netlify",
+    "EC2", "S3", "Lambda", "RDS", "CloudFront",
+    "Cloud Functions", "App Engine", "BigQuery"
+  ],
+  "domains": [
+    "Machine Learning", "Deep Learning", "NLP", "Computer Vision",
+    "Data Analysis", "Data Science", "Data Engineering",
+    "Web Development", "Full Stack", "Frontend", "Backend",
+    "Cloud Computing", "DevOps", "MLOps", "DataOps",
+    "Cybersecurity", "Blockchain", "IoT", "Embedded Systems",
+    "Mobile Development", "API Development", "Microservices",
+    "System Design", "Distributed Systems"
+  ],
+  "certifications_keywords": [
+    "AWS Certified", "Google Cloud", "Azure Certified", "CKA", "CKAD",
+    "Oracle Certified", "Cisco", "CompTIA", "CEH", "OSCP",
+    "TensorFlow Developer", "Databricks", "Snowflake",
+    "PMP", "Scrum Master", "PRINCE2"
+  ]
+}

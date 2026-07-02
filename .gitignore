@@ -1,0 +1,4 @@
+backend/.env
+backend/.venv/
+backend/data/resumes/
+frontend/node_modules/
