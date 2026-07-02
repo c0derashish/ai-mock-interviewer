@@ -2,6 +2,132 @@ import { useState, useRef } from 'react'
 import { parseResume, updateResume } from '../api'
 import { useResume } from '../hooks/useResume'
 import ResumePreview from '../components/ResumePreview'
+import CategorySelect from '../components/CategorySelect'
+
+
+const ROLE_CATEGORIES = {
+  "Software Development": [
+    "Software Engineer",
+    "Frontend Developer",
+    "Backend Developer",
+    "Full Stack Developer",
+    "Web Developer",
+    "Mobile App Developer",
+    "Android Developer",
+    "iOS Developer",
+    "Game Developer"
+  ],
+
+  "AI & Data Science": [
+    "Data Analyst",
+    "Business Analyst",
+    "Data Scientist",
+    "Machine Learning Engineer",
+    "AI Engineer",
+    "Generative AI Engineer",
+    "Deep Learning Engineer",
+    "Computer Vision Engineer",
+    "NLP Engineer",
+    "MLOps Engineer",
+    "Data Engineer",
+    "BI Developer",
+    "Prompt Engineer"
+  ],
+
+  "Cloud & DevOps": [
+    "Cloud Engineer",
+    "DevOps Engineer",
+    "Site Reliability Engineer",
+    "Platform Engineer",
+    "Infrastructure Engineer",
+    "Solutions Architect"
+  ],
+
+  "Cybersecurity": [
+    "Cybersecurity Analyst",
+    "Security Engineer",
+    "SOC Analyst",
+    "Penetration Tester",
+    "Ethical Hacker",
+    "Information Security Analyst"
+  ],
+
+  "Systems & Infrastructure": [
+    "System Engineer",
+    "Network Engineer",
+    "Database Administrator",
+    "Embedded Systems Engineer",
+    "IoT Engineer"
+  ],
+
+  "Testing & QA": [
+    "QA Engineer",
+    "Automation Test Engineer",
+    "Manual Test Engineer",
+    "Performance Test Engineer"
+  ],
+
+  "Product & Management": [
+    "Associate Product Manager",
+    "Product Manager",
+    "Technical Product Manager",
+    "Project Manager",
+    "Program Manager",
+    "Scrum Master"
+  ],
+
+  "Design": [
+    "UI Designer",
+    "UX Designer",
+    "UI/UX Designer",
+    "Product Designer",
+    "Graphic Designer"
+  ],
+
+  "Business & Finance": [
+    "Business Development Executive",
+    "Business Analyst",
+    "Operations Analyst",
+    "Marketing Executive",
+    "Digital Marketing Specialist",
+    "Financial Analyst",
+    "Investment Analyst",
+    "Risk Analyst",
+    "Accountant"
+  ],
+
+  "Core Engineering": [
+    "Mechanical Engineer",
+    "Electrical Engineer",
+    "Electronics Engineer",
+    "Civil Engineer",
+    "Chemical Engineer",
+    "Production Engineer",
+    "Industrial Engineer",
+    "Automobile Engineer",
+    "Aerospace Engineer"
+  ],
+
+  "HR & Consulting": [
+    "HR Executive",
+    "Talent Acquisition",
+    "Recruiter",
+    "Technology Consultant",
+    "Management Consultant",
+    "HR / Behavioral Only"
+  ],
+
+  "Students & Freshers": [
+    "Campus Placement",
+    "Graduate Engineer Trainee (GET)",
+    "Software Engineering Intern",
+    "Data Science Intern",
+    "Machine Learning Intern",
+    "Business Analyst Intern",
+    "Summer Internship",
+    "General Internship"
+  ]
+}
 
 const ROLES = ['Software Engineer', 'Data Analyst', 'Product Manager', 'Core / Domain', 'HR / Behavioral Only']
 const DIFFICULTIES = ['Fresher', 'Mid-Level', 'Aggressive']
@@ -27,6 +153,7 @@ export default function Setup({ session, onStart }) {
   const [dragging, setDragging] = useState(false)
   const fileRef = useRef(null)
 
+  const [roleCategory, setRoleCategory] = useState('Software Development')
   const [role, setRole] = useState('Software Engineer')
   const [difficulty, setDifficulty] = useState('Fresher')
   const [mode, setMode] = useState('Standard')
@@ -103,16 +230,15 @@ export default function Setup({ session, onStart }) {
   return (
     <div className="min-h-screen p-6 max-w-5xl mx-auto">
       {/* Header */}
-      <div className="mb-10">
+      <div className="mb-10 pt-28">
         <div className="flex items-center gap-3 mb-2">
           <span className="w-2 h-2 rounded-full bg-accent animate-pulse" />
-          <span className="text-xs font-mono text-text-dim uppercase tracking-widest">AI Mock Interviewer</span>
+          <span className="text-xs font-mono text-text-dim uppercase tracking-widest">Your resume. Your questions. No generic prep.</span>
         </div>
-        <h1 className="text-3xl font-bold text-text">
-          Your resume. Your questions.<br />
-          <span className="text-accent">No generic prep.</span>
+        <h1 className="text-8xl font-bold text-text">
+          AI Mock <span className="font-extrabold inline-block bg-gradient-to-r from-violet-400 via-purple-500 to-fuchsia-500 bg-clip-text text-transparent">Interviewer</span>
         </h1>
-        <p className="text-text-dim mt-2 text-sm max-w-lg">
+        <p className="text-text-dim mt-2 text-sm ">
           Upload once. Questions are generated from your actual projects and tech stack, not a static bank.
         </p>
       </div>
@@ -191,23 +317,30 @@ export default function Setup({ session, onStart }) {
         <div className="space-y-6">
           <h2 className="text-sm font-mono text-text-dim uppercase tracking-wider">Interview Setup</h2>
 
+          {/* Role Category */}
+          <div className="space-y-2">
+            <label className="text-xs font-mono text-text-dim">Role Category</label>
+
+            <CategorySelect
+              value={roleCategory}
+              onChange={(category) => {
+                setRoleCategory(category);
+                setRole(ROLE_CATEGORIES[category][0]);
+              }}
+              options={Object.keys(ROLE_CATEGORIES)}
+            />
+          </div>
+
           {/* Role */}
           <div className="space-y-2">
             <label className="text-xs font-mono text-text-dim">Target Role</label>
-            <div className="grid grid-cols-1 gap-1.5">
-              {ROLES.map(r => (
-                <button
-                  key={r}
-                  onClick={() => setRole(r)}
-                  className={`text-left px-4 py-2.5 rounded-lg border text-sm transition-all
-                    ${role === r
-                      ? 'border-accent bg-accent/10 text-text'
-                      : 'border-border hover:border-accent/40 text-text-dim'}`}
-                >
-                  {r}
-                </button>
-              ))}
-            </div>
+            <CategorySelect
+              value={role}
+              onChange={(selectedRole) => {
+                setRole(selectedRole);
+              }}
+              options={ROLE_CATEGORIES[roleCategory]}
+            />
           </div>
 
           {/* Difficulty */}
@@ -291,7 +424,7 @@ export default function Setup({ session, onStart }) {
           <button
             onClick={handleStart}
             disabled={!ready}
-            className="btn-primary w-full py-3 text-base mt-2"
+            className='btn-primary bg-gradient-to-r from-accent via-accent-light to-fuchsia-500 hover:brightness-110 transition-all duration-300  w-full py-3 text-base mt-2'
           >
             {ready ? `Start Interview →` : 'Upload resume to begin'}
           </button>

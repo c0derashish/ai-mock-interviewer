@@ -28,17 +28,20 @@ export default function Interview({ state, actions, onSummary }) {
   const [shakeSkip, setShakeSkip] = useState(false)
   const [processing, setProcessing] = useState(false)
   const textareaRef = useRef(null)
+  const initialQuestionLoadedRef = useRef(false)
 
   const timerSeconds = config.timer_seconds || 0
   const noLimit = timerSeconds === 0
 
-  const { seconds, ratio, isWarning, start: startTimer, reset: resetTimer } = useTimer(
+  const { seconds, ratio, isWarning, reset: resetTimer, restart: restartTimer } = useTimer(
     timerSeconds || 90,
     () => { if (!noLimit && !answered) handleTimerExpire() }
   )
 
   // Load first question on mount
   useEffect(() => {
+    if (initialQuestionLoadedRef.current) return
+    initialQuestionLoadedRef.current = true
     loadNextQuestion(false)
     // eslint-disable-next-line
   }, [])
@@ -46,8 +49,7 @@ export default function Interview({ state, actions, onSummary }) {
   // Start timer when new question arrives
   useEffect(() => {
     if (currentQ && !answered && !noLimit) {
-      resetTimer(timerSeconds)
-      startTimer()
+      restartTimer(timerSeconds)
     }
     if (currentQ && !answered) {
       setAnswer('')
@@ -78,7 +80,6 @@ export default function Interview({ state, actions, onSummary }) {
       const q = await generateQuestion(resumeHash, cfg, history)
       q.is_followup = isFollowup
       receiveQuestion(q, isFollowup)
-      if (!noLimit) { resetTimer(timerSeconds); startTimer() }
       textareaRef.current?.focus()
     } catch (e) {
       setError(e.message)
@@ -145,7 +146,6 @@ export default function Interview({ state, actions, onSummary }) {
     setLoading(true)
     setAnswer('')
     receiveQuestion(followUpQ, true)
-    if (!noLimit) { resetTimer(timerSeconds); startTimer() }
     textareaRef.current?.focus()
   }
 
@@ -165,7 +165,7 @@ export default function Interview({ state, actions, onSummary }) {
   // Progress dots
   const dots = Array.from({ length: totalMain }, (_, i) => {
     const q = questions.filter(q => !q.is_followup)[i]
-    return q?.score_result ? (q.skipped ? 'skip' : 'done') : (i === mainQCount ? 'current' : 'pending')
+    return q?.score_result ? (q.skipped ? 'skip' : 'done') : (i === mainQCount - 1 ? 'current' : 'pending')
   })
 
   const wordCount = answer.trim().split(/\s+/).filter(Boolean).length
@@ -227,7 +227,7 @@ export default function Interview({ state, actions, onSummary }) {
         <div className="lg:col-span-3 space-y-4">
           <QuestionCard
             question={currentQ?.q_data}
-            qNumber={mainQCount}
+            qNumber={currentQ?.is_followup ? mainQCount : Math.max(1, mainQCount)}
             total={totalMain}
             isFollowup={currentQ?.is_followup}
             loading={loading && !currentQ}

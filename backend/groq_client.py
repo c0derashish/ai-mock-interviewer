@@ -1,51 +1,38 @@
 """
 groq_client.py
-Single wrapper for all Groq API calls.
+Single wrapper for all Groq API calls through LangChain.
 Always returns parsed dict. All prompts must instruct JSON-only output.
 """
 import json
-import re
 import os
-from groq import Groq
+import re
 
-_client = None
-
-
-def get_client() -> Groq:
-    global _client
-    if _client is None:
-        api_key = os.environ.get("GROQ_API_KEY")
-        if not api_key:
-            raise ValueError("GROQ_API_KEY not set in environment")
-        _client = Groq(api_key=api_key)
-    return _client
+from langchain_core.messages import HumanMessage, SystemMessage
+from langchain_groq import ChatGroq
 
 
 def call_groq(prompt: str, model: str = "llama-3.3-70b-versatile", max_tokens: int = 1000) -> dict:
     """
-    Single entry point for all Groq calls.
+    Single entry point for all LangChain/Groq calls.
     - model: use llama-3.3-70b-versatile for generation, llama-3.1-8b-instant for scoring
     - Always returns parsed dict
     """
-    client = get_client()
+    api_key = os.environ.get("GROQ_API_KEY")
+    if not api_key:
+        raise ValueError("GROQ_API_KEY not set in environment")
 
-    response = client.chat.completions.create(
+    llm = ChatGroq(
         model=model,
-        messages=[
-            {
-                "role": "system",
-                "content": "You are a precise JSON generator. Always respond with valid JSON only. No markdown, no explanation, no code fences."
-            },
-            {
-                "role": "user",
-                "content": prompt
-            }
-        ],
         temperature=0.4,
         max_tokens=max_tokens,
     )
 
-    text = response.choices[0].message.content.strip()
+    response = llm.invoke([
+        SystemMessage(content="You are a precise JSON generator. Always respond with valid JSON only. No markdown, no explanation, no code fences."),
+        HumanMessage(content=prompt),
+    ])
+
+    text = response.content.strip()
 
     # Strip any accidental markdown fences
     text = re.sub(r'```json\s*', '', text)

@@ -22,18 +22,18 @@ Built for Indian placement prep. Zero paid APIs. Resume-aware questions, hybrid 
 
 ## Tech Stack
 
-```
-Backend                       Frontend
-──────────────────────────    ──────────────────────────
-Flask                         React 18 + Vite
-pdfplumber                    Tailwind CSS
-Groq API                      useReducer (no Redux)
-  llama-3.3-70b-versatile     JetBrains Mono + Inter
-  llama-3.1-8b-instant        localStorage (resume cache)
-JSON file store
-```
+| Backend | Frontend |
+|---|---|
+|Flask | React 18 + Vite |
+|pdfplumber | Tailwind CSS |
+| LangChain (`langchain-groq`) | useReducer (no Redux) |
+|Groq API `llama-3.3-70b-versatile` `llama-3.1-8b-instant` | JetBrains Mono + Inter |
+| | localStorage (resume cache) |
+| | JSON file store |
 
 **Why Groq:** ~300 tok/s inference. Interview needs burst speed. Free tier: 30 RPM, 14,400 req/day.
+
+**Why LangChain:** The backend routes all model calls through LangChain's `ChatGroq` wrapper in `backend/groq_client.py`. This keeps the rest of the app on one stable `call_groq()` function while making the LLM provider layer easier to swap, trace, or extend later.
 
 **Why not LLM-first parsing:** Regex finds email, phone, degree, skills instantly. No API cost, no hallucination risk. LLM only fixes projects + experience (free text, hard to regex).
 
@@ -46,7 +46,7 @@ ai-mock-interviewer/
 │
 ├── backend/
 │   ├── app.py                   # Flask routes — thin, delegates to modules
-│   ├── groq_client.py           # Single Groq wrapper (all calls go here)
+│   ├── groq_client.py           # Single LangChain ChatGroq wrapper (all calls go here)
 │   ├── resume_parser.py         # Rule-based extraction — zero LLM
 │   ├── prompts.py               # All prompt templates in one file
 │   ├── scorer.py                # Hybrid scoring: 30% keyword + 70% LLM
@@ -107,7 +107,7 @@ Browser (React)
                    ├─ /parse-resume
                    │    ├─ pdfplumber → raw text
                    │    ├─ rule_based_extract() → 80% fields
-                   │    ├─ call_groq() → projects + experience only
+                   │    ├─ call_groq() via LangChain ChatGroq → projects + experience only
                    │    └─ save data/resumes/{hash}.json
                    │
                    ├─ /resume/:hash  → serve cached JSON
@@ -115,16 +115,16 @@ Browser (React)
                    ├─ /generate-question
                    │    ├─ load resume from disk (no re-parse)
                    │    ├─ build prompt: resume + history + config
-                   │    └─ Groq llama-3.3-70b-versatile → question JSON
+                   │    └─ LangChain ChatGroq llama-3.3-70b-versatile → question JSON
                    │
                    ├─ /score-answer
                    │    ├─ keyword_coverage() → deterministic ratio
-                   │    ├─ Groq llama-3.1-8b-instant → llm_score + feedback
+                   │    ├─ LangChain ChatGroq llama-3.1-8b-instant → llm_score + feedback
                    │    └─ final = 0.3*kw + 0.7*llm
                    │
                    └─ /generate-summary
                         ├─ compute heatmap locally (pure math)
-                        └─ Groq llama-3.3-70b-versatile → gap action plans only
+                        └─ LangChain ChatGroq llama-3.3-70b-versatile → gap action plans only
 ```
 
 ---
@@ -148,7 +148,7 @@ PDF upload
       → projects_raw (free text)
       → experience_raw (varied formats)
     │
-    ▼ Groq fix-up (1 call, minimal tokens)
+    ▼ LangChain ChatGroq fix-up (1 call, minimal tokens)
       → structured projects + experience JSON
     │
     ▼ Merge → Final Resume JSON
@@ -325,4 +325,4 @@ UI shows green `rule` / blue `llm` tags per field. Hover to see which extraction
 
 ---
 
-*Built by Ashish. Stack: Flask · Groq · pdfplumber · React · Vite · Tailwind*
+*Built by Ashish. Stack: Flask · LangChain · Groq · pdfplumber · React · Vite · Tailwind*
